@@ -1,92 +1,41 @@
-import random
-import time
-from threading import Thread, Event
+This project is a Smart City Management System that uses Event-Driven Programming (EDP) to model interactions between different city subsystems. The system is designed to showcase how components such as traffic, emergency response, and environmental monitoring can work together efficiently.
 
-class EventBus:
-    def __init__(self):
-        self.listeners = {}
+Features
 
-    def subscribe(self, event_type, listener):
-        if event_type not in self.listeners:
-            self.listeners[event_type] = []
-        self.listeners[event_type].append(listener)
+Key Components:
 
-    def emit(self, event_type, data):
-        if event_type in self.listeners:
-            for listener in self.listeners[event_type]:
-                listener(data)
+Traffic Manager
 
-class TrafficManager:
-    def __init__(self, event_bus):
-        self.event_bus = event_bus
-        self.event_bus.subscribe("emergency", self.handle_emergency)
+Monitors traffic levels and alerts when congestion is detected.
 
-    def monitor_traffic(self):
-        while True:
-            traffic_level = random.randint(1, 10)  # Simulating traffic levels
-            print(f"[TrafficManager] Traffic level: {traffic_level}")
-            if traffic_level > 7:
-                self.event_bus.emit("traffic_alert", {"level": traffic_level})
-            time.sleep(3)
+Adjusts traffic flow during emergencies.
 
-    def handle_emergency(self, data):
-        print(f"[TrafficManager] Adjusting traffic for emergency at {data['location']}")
+Emergency Manager
 
-class EmergencyManager:
-    def __init__(self, event_bus):
-        self.event_bus = event_bus
+Detects emergencies (e.g., accidents or fires) and informs relevant subsystems.
 
-    def detect_emergency(self):
-        while True:
-            if random.choice([True, False]):
-                location = random.choice(["Sector 1", "Sector 2", "Sector 3"])
-                print(f"[EmergencyManager] Emergency detected at {location}")
-                self.event_bus.emit("emergency", {"location": location})
-            time.sleep(5)
+Optimizes response routes.
 
-class EnvironmentManager:
-    def __init__(self, event_bus):
-        self.event_bus = event_bus
+Environment Manager
 
-    def monitor_environment(self):
-        while True:
-            air_quality = random.randint(1, 100)  # Simulating air quality index
-            print(f"[EnvironmentManager] Air Quality Index: {air_quality}")
-            if air_quality < 50:
-                self.event_bus.emit("environment_alert", {"air_quality": air_quality})
-            time.sleep(4)
+Monitors air quality and alerts citizens if levels are unsafe.
 
-class CitizenInteraction:
-    def __init__(self, event_bus):
-        self.event_bus = event_bus
-        self.event_bus.subscribe("traffic_alert", self.notify_citizens)
-        self.event_bus.subscribe("environment_alert", self.notify_citizens)
+Optimizes waste collection schedules based on sensor data.
 
-    def notify_citizens(self, data):
-        print(f"[CitizenInteraction] Alert: {data}")
+Citizen Interaction
 
-if __name__ == "__main__":
-    event_bus = EventBus()
+Sends alerts about traffic, air quality, and emergencies to city residents.
 
-    traffic_manager = TrafficManager(event_bus)
-    emergency_manager = EmergencyManager(event_bus)
-    environment_manager = EnvironmentManager(event_bus)
-    citizen_interaction = CitizenInteraction(event_bus)
+Provides recommendations to improve daily life in the city.
 
-    # Run systems in parallel
-    threads = [
-        Thread(target=traffic_manager.monitor_traffic),
-        Thread(target=emergency_manager.detect_emergency),
-        Thread(target=environment_manager.monitor_environment),
-    ]
+Event-Driven Design:
 
-    for thread in threads:
-        thread.daemon = True
-        thread.start()
+The system uses a centralized EventBus for communication between components. Each subsystem can emit and respond to events, ensuring modularity and flexibility.
 
-    print("[System] Smart City Management System is running...")
-    try:
-        while True:
-            time.sleep(1)  # Keep the main thread alive
-    except KeyboardInterrupt:
-        print("[System] Shutting down...")
+AI Integration:
+
+AI can be integrated for predictive analytics, such as forecasting traffic patterns and identifying potential environmental risks.
+
+User Interface (Optional):
+
+An interactive dashboard can be added to provide real-time updates and allow citizens to report issues or receive alerts.
